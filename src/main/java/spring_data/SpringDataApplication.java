@@ -32,9 +32,13 @@ public class SpringDataApplication implements CommandLineRunner {
         accountRepository.findAll().forEach(System.out::println);
 
         // Получаем аккаунт по email и выводим его
-        Account foundAccount = accountRepository.findByEmail("lori2@gmail.com");
+        Account foundAccount = accountRepository.findAccountByEmail("lori2@gmail.com");
         System.out.println("Found account by email: " + foundAccount);
-        Account foundByName = accountRepository.findByName("Lori5");
+
+        Account foundByName = accountRepository.findAccountByName("Lori5");
         System.out.println("Found account by name: " + (foundByName != null ? foundByName : "Not found"));
+
+        Account fondAccountByNameAndBill = accountRepository.findAccountByNameAndBill("Lori6", 2006);
+        System.out.println("Found account by name and bill: " + (fondAccountByNameAndBill != null ? fondAccountByNameAndBill : "Not found"));
     }
 }
