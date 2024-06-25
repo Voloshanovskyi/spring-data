@@ -4,10 +4,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.Transactional;
 import spring_data.entity.Account;
 import spring_data.repository.AccountRepository;
 
 @SpringBootApplication
+@EnableTransactionManagement
+@EntityScan(basePackages = {"spring_data.entity"})
 public class SpringDataApplication implements CommandLineRunner {
 
     private final AccountRepository accountRepository;
@@ -22,6 +27,7 @@ public class SpringDataApplication implements CommandLineRunner {
         SpringApplication.run(SpringDataApplication.class, args);
     }
 
+    @Transactional
     @Override
     public void run(String... args) {
         for (int i = 1; i < 11; i++) {
@@ -37,6 +43,12 @@ public class SpringDataApplication implements CommandLineRunner {
 
         Account foundByName = accountRepository.findAccountByName("Lori5");
         System.out.println("Found account by name: " + (foundByName != null ? foundByName : "Not found"));
+
+        accountRepository.setNameFor(7L, "Baxter");
+
+        Account foundById = accountRepository.findAccountById(7L);
+        Account updatedAccount = accountRepository.findById(7L).orElse(null);
+        System.out.println("Found account by id: " + (foundById != null ? foundById : "Not found"));
 
         Account fondAccountByNameAndBill = accountRepository.findAccountByNameAndBill("Lori6", 2006);
         System.out.println("Found account by name and bill: " + (fondAccountByNameAndBill != null ? fondAccountByNameAndBill : "Not found"));
