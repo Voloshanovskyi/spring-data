@@ -4,35 +4,37 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.jdbc.core.JdbcTemplate;
-
-import java.util.Map;
+import spring_data.entity.Account;
+import spring_data.repository.AccountRepository;
 
 @SpringBootApplication
 public class SpringDataApplication implements CommandLineRunner {
+
+    private final AccountRepository accountRepository;
+
+    @Autowired
+
+    public SpringDataApplication(final AccountRepository accountRepository) {
+        this.accountRepository = accountRepository;
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(SpringDataApplication.class, args);
     }
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
     @Override
     public void run(String... args) {
-//        // Создайте таблицу Account, если она не существует
-//        jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS Account (" +
-//                             "id BIGINT PRIMARY KEY AUTO_INCREMENT," +
-//                             "name VARCHAR(255)," +
-//                             "email VARCHAR(255)," +
-//                             "bill INTEGER)");
+        for (int i = 1; i < 11; i++) {
+            accountRepository.save(new Account((long) i, "Lori" + i, "lori" + i + "@gmail.com", 2000 + i));
+        }
+        // Получаем и выводим все аккаунты
+        System.out.println("All accounts:");
+        accountRepository.findAll().forEach(System.out::println);
 
-        // Вставка данных в таблицу Account
-        jdbcTemplate.execute("INSERT INTO Account (id, name, email, bill) VALUES (1, 'Lori', 'lori@gmail.com', 2000)");
-
-        // Извлечение данных из таблицы Account
-        Map<String, Object> resultSet = jdbcTemplate.queryForMap("SELECT * FROM Account WHERE id = 1");
-        System.out.println(resultSet.get("email"));
-
+        // Получаем аккаунт по email и выводим его
+        Account foundAccount = accountRepository.findByEmail("lori2@gmail.com");
+        System.out.println("Found account by email: " + foundAccount);
+        Account foundByName = accountRepository.findByName("Lori5");
+        System.out.println("Found account by name: " + (foundByName != null ? foundByName : "Not found"));
     }
 }
